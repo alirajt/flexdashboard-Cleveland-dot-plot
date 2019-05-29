@@ -1,5 +1,5 @@
 ---
-title: "Raccomandate"
+title: "Delivery"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -15,25 +15,25 @@ library(stringr)
 library(DT)
 library(ggpubr)
 
-Raccomandate <- read_excel("mock-data.xlsx")
-Raccomandate$Arrivo <- ymd(Raccomandate$Arrivo)
-Raccomandate$Scadenza <- ymd(Raccomandate$Scadenza)
+Delivery_Racc <- read_excel("mock-data.xlsx")
+Delivery_Racc$Arrivo <- ymd(Delivery_Racc$Arrivo)
+Delivery_Racc$Scadenza <- ymd(Delivery_Racc$Scadenza)
 
 # deadline for sequenzes
 SC_A <- ymd("2019-05-31")
 SC_B <- ymd("2019-05-29")
 SC_C <- ymd("2019-05-30")
 
-Raccomandate$Scadono <- ifelse(Raccomandate$Seq == "A", Raccomandate$Scadenza <= SC_A,
-                               ifelse(Raccomandate$Seq == "B", Raccomandate$Scadenza <= SC_B, 
-                                      Raccomandate$Scadenza <= SC_C))
-Raccomandate <- Raccomandate %>%
+Delivery_Racc$Scadono <- ifelse(Delivery_Racc$Seq == "A", Delivery_Racc$Scadenza <= SC_A,
+                               ifelse(Delivery_Racc$Seq == "B", Delivery_Racc$Scadenza <= SC_B, 
+                                      Delivery_Racc$Scadenza <= SC_C))
+Delivery_Racc <- Delivery_Racc %>%
   mutate(Scadono = ifelse(Scadono == TRUE, "SI", "NO"))
 
-Scad <- Raccomandate %>%
+Scad <- Delivery_Racc %>%
   filter(Scadono == "SI")
 
-Certificate <- read_excel("Certificate.xlsx")
+Delivery_Cert <- read_excel("Certificate.xlsx")
 ```
 
 
@@ -45,14 +45,14 @@ Row {data-height=100}
 ### Delivery-Racc
 
 ```{r echo=FALSE}
-numeroRacc <- Raccomandate %>% count()
-valueBox(numeroRacc, icon = "fa-archive")
+nrRacc <- Delivery_Racc %>% count()
+valueBox(nrRacc, icon = "fa-archive")
 ```
 
 ### Expiring Delivery-Racc
 
 ```{r echo=FALSE}
-raccScad <- Raccomandate %>%
+raccScad <- Delivery_Racc %>%
   filter(Scadono == "SI") %>%
   count()
 valueBox(raccScad, icon = "fa-hourglass-half", color = "warning")
@@ -61,14 +61,14 @@ valueBox(raccScad, icon = "fa-hourglass-half", color = "warning")
 ### Delivery-Cert
 
 ```{r echo=FALSE}
-numeroCert <- Certificate %>% count()
-valueBox(numeroCert, icon = "fa-envelope")
+nrCert <- Delivery_Cert %>% count()
+valueBox(nrCert, icon = "fa-envelope")
 ```
 
 ### Expiring Delivery-Cert
 
 ```{r echo=FALSE}
-certNO <- Certificate %>%
+certNO <- Delivery_Cert %>%
   filter(Esito == "NO") %>%
   count()
 valueBox(certNO, icon = "fa-exclamation", color = "warning")
@@ -86,7 +86,7 @@ Row
 ### Delivery-Racc Plot
 
 ```{r echo=FALSE}
-grpost <- Raccomandate %>%
+grpost <- Delivery_Racc %>%
   group_by(Postino, Seq, Scadono) %>%
   count()
 
@@ -105,17 +105,16 @@ ggdotchart(grpost, x = "Postino", y = "n",
 
 ```
 
-
 ### Delivery-Cert Plot
+
 ```{r echo=FALSE}
 
-grCert <- Certificate %>%
+grCert <- Delivery_Cert %>%
   group_by(Postino, Esito) %>%
   count()
 
 ggdotchart(grCert, x = "Postino", y = "n",
            color = "Esito",
-           #palette = c("#00AFBB", "#E7B800", "#FC4E07"),
            sorting = "descending",
            add = "segments",
            rotate = TRUE,
@@ -126,5 +125,5 @@ ggdotchart(grCert, x = "Postino", y = "n",
            dot.size = 10,
            label = round(grCert$n),
            font.label = list(color = "black", size = 8, 
-                             vjust = 0.5),
-           ggtheme = theme_pubr())
+                             vjust = 0.5))
+```
