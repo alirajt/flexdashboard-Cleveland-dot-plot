@@ -33,23 +33,23 @@ Raccomandate <- Raccomandate %>%
 Scad <- Raccomandate %>%
   filter(Scadono == "SI")
 
-#Certificate <- read_excel("Certificate.xlsx")
+Certificate <- read_excel("Certificate.xlsx")
 ```
 
 
-Riepilogo {data-icon="fa-signal"}
+Plot {data-icon="fa-signal"}
 ===========================================================
 
 Row {data-height=100}
 ----------------------------------------------
-### Raccomandate in Filiale
+### Delivery-Racc
 
 ```{r echo=FALSE}
 numeroRacc <- Raccomandate %>% count()
 valueBox(numeroRacc, icon = "fa-archive")
 ```
 
-### Raccomandate in Scadenza
+### Expiring Delivery-Racc
 
 ```{r echo=FALSE}
 raccScad <- Raccomandate %>%
@@ -58,24 +58,37 @@ raccScad <- Raccomandate %>%
 valueBox(raccScad, icon = "fa-hourglass-half", color = "warning")
 ```
 
+### Delivery-Cert
 
-### Ultimo Aggiornamento
+```{r echo=FALSE}
+numeroCert <- Certificate %>% count()
+valueBox(numeroCert, icon = "fa-envelope")
+```
+
+### Expiring Delivery-Cert
+
+```{r echo=FALSE}
+certNO <- Certificate %>%
+  filter(Esito == "NO") %>%
+  count()
+valueBox(certNO, icon = "fa-exclamation", color = "warning")
+```
+
+### Last Update
 
 ```{r echo=FALSE}
 valueBox(substr(now(), 6, 16))
 ```
 
-
-
 Row
 ----------------------------------------------
 
-### Totale Raccomandate
+### Delivery-Racc Plot
+
 ```{r echo=FALSE}
 grpost <- Raccomandate %>%
   group_by(Postino, Seq, Scadono) %>%
   count()
-#grpost
 
 ggdotchart(grpost, x = "Postino", y = "n",
            color = "Scadono",
@@ -88,7 +101,30 @@ ggdotchart(grpost, x = "Postino", y = "n",
            dot.size = 8,
            label = round(grpost$n),
            font.label = list(color = "white", size = 9, 
-                             vjust = 0.5),
-           ggtheme = theme_pubr())
+                             vjust = 0.5))
 
 ```
+
+
+### Delivery-Cert Plot
+```{r echo=FALSE}
+
+grCert <- Certificate %>%
+  group_by(Postino, Esito) %>%
+  count()
+
+ggdotchart(grCert, x = "Postino", y = "n",
+           color = "Esito",
+           #palette = c("#00AFBB", "#E7B800", "#FC4E07"),
+           sorting = "descending",
+           add = "segments",
+           rotate = TRUE,
+           group = "Esito",
+           xlab = FALSE,
+           ylab = FALSE,
+           facet.by = "Esito",
+           dot.size = 10,
+           label = round(grCert$n),
+           font.label = list(color = "black", size = 8, 
+                             vjust = 0.5),
+           ggtheme = theme_pubr())
