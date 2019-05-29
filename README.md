@@ -1,0 +1,1 @@
+An example of a simple dashboard made with flexdashboard and Cleveland's Dot Plots
