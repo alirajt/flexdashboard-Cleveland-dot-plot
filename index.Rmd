@@ -1,0 +1,94 @@
+---
+title: "Raccomandate"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(flexdashboard)
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(stringr)
+library(DT)
+library(ggpubr)
+
+Raccomandate <- read_excel("mock-data.xlsx")
+Raccomandate$Arrivo <- ymd(Raccomandate$Arrivo)
+Raccomandate$Scadenza <- ymd(Raccomandate$Scadenza)
+
+# deadline for sequenzes
+SC_A <- ymd("2019-05-31")
+SC_B <- ymd("2019-05-29")
+SC_C <- ymd("2019-05-30")
+
+Raccomandate$Scadono <- ifelse(Raccomandate$Seq == "A", Raccomandate$Scadenza <= SC_A,
+                               ifelse(Raccomandate$Seq == "B", Raccomandate$Scadenza <= SC_B, 
+                                      Raccomandate$Scadenza <= SC_C))
+Raccomandate <- Raccomandate %>%
+  mutate(Scadono = ifelse(Scadono == TRUE, "SI", "NO"))
+
+Scad <- Raccomandate %>%
+  filter(Scadono == "SI")
+
+#Certificate <- read_excel("Certificate.xlsx")
+```
+
+
+Riepilogo {data-icon="fa-signal"}
+===========================================================
+
+Row {data-height=100}
+----------------------------------------------
+### Raccomandate in Filiale
+
+```{r echo=FALSE}
+numeroRacc <- Raccomandate %>% count()
+valueBox(numeroRacc, icon = "fa-archive")
+```
+
+### Raccomandate in Scadenza
+
+```{r echo=FALSE}
+raccScad <- Raccomandate %>%
+  filter(Scadono == "SI") %>%
+  count()
+valueBox(raccScad, icon = "fa-hourglass-half", color = "warning")
+```
+
+
+### Ultimo Aggiornamento
+
+```{r echo=FALSE}
+valueBox(substr(now(), 6, 16))
+```
+
+
+
+Row
+----------------------------------------------
+
+### Totale Raccomandate
+```{r echo=FALSE}
+grpost <- Raccomandate %>%
+  group_by(Postino, Seq, Scadono) %>%
+  count()
+#grpost
+
+ggdotchart(grpost, x = "Postino", y = "n",
+           color = "Scadono",
+           add = "segments",
+           rotate = TRUE,
+           group = "Postino",
+           facet.by = "Seq",
+           xlab = FALSE,
+           ylab = FALSE,
+           dot.size = 8,
+           label = round(grpost$n),
+           font.label = list(color = "white", size = 9, 
+                             vjust = 0.5),
+           ggtheme = theme_pubr())
+
+```
