@@ -127,3 +127,60 @@ ggdotchart(grCert, x = "Postino", y = "n",
            font.label = list(color = "black", size = 8, 
                              vjust = 0.5))
 ```
+
+
+
+Expiring Delivery-Racc
+===============================================================================
+
+```{r echo=FALSE}
+Scad$Giro <- as.factor(Scad$Giro)
+Scad$Seq <- as.factor(Scad$Seq)
+Scad$Postino <- as.factor(Scad$Postino)
+
+Scad[is.na(Scad)] <- ""
+Scad$Indirizzo <- str_c(Scad$Via, Scad$`N°`, sep = " ")
+
+tabela <- Scad %>%
+  select("Barcode", "Nome Dest.", "Indirizzo", "Giro",
+             "Seq", "Postino")
+
+datatable(tabela, 
+          class = 'compact nowrap',
+          extensions = c('Buttons', 'Responsive'),
+          filter = 'top', 
+          options = list(
+            #bPaginate = FALSE,
+            dom = 'Bfrtip',
+            buttons = list(I('colvis'), c('excel', 'print'))
+            )
+          )
+
+
+```
+
+
+All Delivery-Racc
+===============================================================================
+
+```{r dettaglio, echo=FALSE}
+Delivery_Racc$Giro <- as.factor(Delivery_Racc$Giro)
+Delivery_Racc$Arrivo <- as.factor(Delivery_Racc$Arrivo)
+Delivery_Racc$CAP <- as.factor(Delivery_Racc$CAP)
+Delivery_Racc$Seq <- as.factor(Delivery_Racc$Seq)
+Delivery_Racc$Scadenza <- as.factor(Delivery_Racc$Scadenza)
+Delivery_Racc$Postino <- as.factor(Delivery_Racc$Postino)
+
+datatable(Delivery_Racc, 
+          class = 'compact nowrap',
+          filter = 'top',
+          extensions = c('Buttons', 'Responsive'),
+          options = list(
+            pageLength = 14,
+            dom = 'Bfrtip',
+            buttons = list(I('colvis'), c('excel', 'print'))
+            )
+          )
+
+```
+
