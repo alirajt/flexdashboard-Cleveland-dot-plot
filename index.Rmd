@@ -36,7 +36,6 @@ Scad <- Delivery_Racc %>%
 Delivery_Cert <- read_excel("Certificate.xlsx")
 ```
 
-
 Plot {data-icon="fa-signal"}
 ===========================================================
 
@@ -128,8 +127,6 @@ ggdotchart(grCert, x = "Postino", y = "n",
                              vjust = 0.5))
 ```
 
-
-
 Expiring Delivery-Racc
 ===============================================================================
 
@@ -158,7 +155,6 @@ datatable(tabela,
 
 
 ```
-
 
 All Delivery-Racc
 ===============================================================================
